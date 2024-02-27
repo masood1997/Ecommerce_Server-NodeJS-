@@ -53,7 +53,7 @@ const getMyOrders = asyncErrorHandler(async (req, res, next) => {
 
 const getSingleOrder = async (req, res, next) => {
   const order = await Order.find({ user: req.user._id, _id: req.params.id });
-  if (!order.length>0)
+  if (!order.length > 0)
     return next(new CustomError("Couldn't find an order matching the provided Order ID for your account", 400));
 
   res.status(200).json({
@@ -94,7 +94,9 @@ const updateOrderStatus = asyncErrorHandler(async (req, res, next) => {
     order.orderItems.forEach(async (item) => {
       const product = await Product.findById(item.productId);
       product.stock -= item.quantity;
-      await product.save();
+      await product.save({
+        validateBeforeSave: true
+      });
     });
     order.orderStatus = req.body.status;
     await order.save();

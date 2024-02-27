@@ -51,9 +51,9 @@ const productSchema = new mongoose.Schema({
     default: 1,
     validate: [
       (stock) => {
-        return /^\d{1,3}$/.test(stock);
+        return /^(?:[1-9]\d{0,2}|999)$/.test(stock);
       },
-      'Maximum allowed stock is 999'
+      'Allowed stock is between 1-999'
     ]
   },
   noOfReviews: {

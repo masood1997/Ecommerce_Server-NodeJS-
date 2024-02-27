@@ -1,8 +1,11 @@
 import multer from 'multer';
+import fs from 'fs';
 
 const userStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './data/images/users');
+    const dest = './data/images/users';
+    fs.mkdirSync(dest, { recursive: true }); // Create directory recursively if it doesn't exist
+    cb(null, dest);
   },
   filename: function (req, file, cb) {
     const fileName = Date.now() + '-' + file.originalname;
@@ -12,7 +15,9 @@ const userStorage = multer.diskStorage({
 
 const productStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './data/images/products');
+    const dest = './data/images/products';
+    fs.mkdirSync(dest, { recursive: true }); // Create directory recursively if it doesn't exist
+    cb(null, dest);
   },
   filename: function (req, file, cb) {
     const fileName = Date.now() + '-' + file.originalname;

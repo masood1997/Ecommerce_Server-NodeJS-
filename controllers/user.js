@@ -8,7 +8,16 @@ import crypto from 'crypto';
 
 /// Get All Users (Admin Route)
 const getAllUsers = asyncErrorHandler(async (req, res, next) => {
-  const users = await User.find({ role: 'user' }).select({ name: 1, email: 1, dob: 1, address: 1, pincode: 1, _id: 0 });
+  const users = await User.find({ role: 'user' }).select({
+    name: 1,
+    email: 1,
+    dob: 1,
+    address: 1,
+    pincode: 1,
+    _id: 1,
+    createdAt: 1
+  });
+
   res.status(200).json({
     success: true,
     message: users
@@ -28,12 +37,13 @@ const getSingleUser = asyncErrorHandler(async (req, res, next) => {
 
 /// Update User Email & Role (Admin Route)
 const updateUserRole = asyncErrorHandler(async (req, res, next) => {
-  const {email,role} = req.body
-  const newUserData = {email,role}
-  const user = await User.findByIdAndUpdate(req.params.id,newUserData,{
-    new:true,
-    runValidators:true
+  const { email, role } = req.body;
+  const newUserData = { email, role };
+  const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+    new: true,
+    runValidators: true
   });
+
   res.status(200).json({
     success: true,
     message: 'User Updated',
@@ -43,7 +53,8 @@ const updateUserRole = asyncErrorHandler(async (req, res, next) => {
 
 /// Delete User by Id (Admin Route)
 const deleteUser = asyncErrorHandler(async (req, res, next) => {
-  await User.findByIdAndDelete(req.params.id);
+  const user = await User.findByIdAndDelete(req.params.id);
+  if(!user) return next(new CustomError(`User not found for ID: ${req.params.id}`,400));
   res.status(200).json({
     success: true,
     message: 'User Deleted'
@@ -124,9 +135,7 @@ const register = asyncErrorHandler(async (req, res, next) => {
 const logOut = asyncErrorHandler((req, res, next) => {
   res
     .status(200)
-    .cookie('token', null, {
-      expires: new Date(Date.now())
-    })
+    .clearCookie('token')
     .json({
       success: true,
       message: 'Logged Out'
